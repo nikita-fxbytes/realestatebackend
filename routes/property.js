@@ -1,19 +1,17 @@
 const express = require('express');
 const router = express.Router();
 const middleware = require('../middleware/middleware')
-const propertyCountroller = require('../controllers/property/propertyController');
-const {createPropertyValidator, validate, deletePropertyValidator} = require('../validators/propertyValidators');
+const propertyCountroller = require('../controllers/adminpanel/propertyController');
+const {createPropertyValidator, validate, deleteAndEditPropertyValidator} = require('../validators/propertyValidator');
 
-//Route 1: Get Property GET "api/property/properties" Login required
+//Route 1: Get Property GET "api/properties" Login required
 router.get('/properties',middleware, propertyCountroller.getAllProperties);
-
-//Route 2: Create Property POST "api/property/create-property" Login required
-router.post('/create-property',middleware, createPropertyValidator, validate, propertyCountroller.createProperty);
-
-//Route 3: Update Property PUT "api/property/update-property/:id". Login required
-router.put('/update-property/:id',middleware, createPropertyValidator, validate, propertyCountroller.updateProperty);
-
-//Route 4: Delete property DELETE "api/property/delete-property/:id"
-router.delete('/delete-property/:id',middleware,deletePropertyValidator, validate, propertyCountroller.deleteProperty);
-
+//Route 2: Create Property POST "api/properties" Login required
+router.post('/properties',middleware, createPropertyValidator, validate, propertyCountroller.createProperty);
+// Route 3 : Edit Property GET "api/properties" Login required
+router.get('/properties/:id',middleware, deleteAndEditPropertyValidator, validate, propertyCountroller.editProperty);
+//Route 4: Update Property PUT "api/properties/:id". Login required
+router.put('/properties/:id',middleware, deleteAndEditPropertyValidator, createPropertyValidator, validate, propertyCountroller.updateProperty);
+//Route 5: Delete property DELETE "api/properties/:id".  Login required
+router.delete('/properties/:id',middleware,deleteAndEditPropertyValidator, validate, propertyCountroller.deleteProperty);
 module.exports = router;

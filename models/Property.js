@@ -29,6 +29,10 @@ const PropertySchema = new Schema({
         type: mongoose.Schema.Types.ObjectId,
         ref: 'user'
     },
+    propertyRealtor:{
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'user'
+    }
    
 },{
     timestamps: true,

@@ -1,25 +1,29 @@
 const {body, check,validationResult} = require('express-validator');
 const message = require('../helper/admin/messages');
-const Property = require('../models/Property')
-//Create property
-exports.createPropertyValidator = [
+const Role = require('../models/Role')
+//Create Role
+exports.createRoleValidator = [
     body('name')
     .notEmpty().withMessage(message.name.required)
-    .isLength({min:3}).withMessage(message.name.length),
-
-    body('price')
-    .notEmpty().withMessage(message.property.price)
+    .isLength({min:3}).withMessage(message.name.length)
+    .custom(async (value) => {
+        const role = await Role.findOne({name: value});
+        if(role){
+            throw new Error(message.role.taken);
+        }
+        return true;
+       }),
 ]
 //End
-// Delete Property
-exports.deleteAndEditPropertyValidator = [
+// Delete Role
+exports.deleteAndEditRoleValidator = [
     check('id').custom((value, { req }) => {
-      return Property.findById(value).exec().then((property) => {
-        if (!property) {
+      return Role.findById(value).exec().then((role) => {
+        if (!role) {
           throw new Error('ID not found');
         }
-        // Attach property to request object for later use
-        req.property = property;
+        // Attach role to request object for later use
+        req.role = role;
         return true;
       });
     }),

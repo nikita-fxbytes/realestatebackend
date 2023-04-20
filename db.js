@@ -1,5 +1,5 @@
 const mongoose = require('mongoose');
-const mongoURI = "mongodb://localhost:27017/realestate";
+const mongoURI = process.env.DB_URL;
 const connectToMongo =  () => {
     mongoose.connect(mongoURI)
     .then( ()=>

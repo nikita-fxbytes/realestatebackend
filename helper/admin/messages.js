@@ -1,4 +1,5 @@
 module.exports = {
+    // Login and register
     name:{
         required: 'Name is required',
         length:"Name must be at least 3 characters"
@@ -19,6 +20,8 @@ module.exports = {
         match:'Password must contain at least one uppercase letter, one lowercase letter, one number, and one special character',
         length: 'Password must be at least 6 characters'
     },
+    // End
+    // Property
     property:{
         price:'Price is required',
         getProperty: "Property fetch successfully!",
@@ -26,12 +29,31 @@ module.exports = {
         updateProperty: "Property updated successfully!",
         deleteProperty: "Property has been deleted!"
     },
+    // End
+    // Auth
     auth:{
         invalidCredentials: "Invalid credentials",
         serverError: "Internal server error",
         createUser: "User create successfully!",
         loginUser: "login successfully!",
         unauthenticated:"Please authenticate using a valid token"
+    },
+    // End
+     // Role
+     role:{
+        taken: 'Name is already registered',
+        getRole: "Role fetch successfully!",
+        createRole: "Role added successfully!",
+        updateRole: "Role updated successfully!",
+        deleteRole: "Role has been deleted!"
+    },
+    // End
+    // User
+    user:{
+        getUser: "User fetch successfully!",  
+        updateUser: "User updated successfully!",
+        deleteUser: "User has been deleted!"
     }
+    // End
     
 }

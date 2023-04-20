@@ -1,6 +1,6 @@
 var jwt = require('jsonwebtoken');
 const contant = require('../helper/constants')
-const message = require('../helper/messages');
+const message = require('../helper/admin/messages');
 const constants = require('../helper/constants')
 const middleware = (req, res, next) =>{
     //Get the user from the jwt token and add id to req object
