@@ -8,7 +8,11 @@ exports.createPropertyValidator = [
     .isLength({min:3}).withMessage(message.name.length),
 
     body('price')
-    .notEmpty().withMessage(message.property.price)
+    .notEmpty().withMessage(message.property.price),
+    body('user')
+    .notEmpty().withMessage(message.user.required),
+    body('propertyRealtor')
+    .notEmpty().withMessage(message.user.propertyRealtor)
 ]
 //End
 // Delete Property

@@ -27,11 +27,13 @@ const PropertySchema = new Schema({
     },
     user:{
         type: mongoose.Schema.Types.ObjectId,
-        ref: 'user'
+        ref: 'user',
+        require: true
     },
     propertyRealtor:{
         type: mongoose.Schema.Types.ObjectId,
-        ref: 'user'
+        ref: 'user',
+        require: true
     }
    
 },{

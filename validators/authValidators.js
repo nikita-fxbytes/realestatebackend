@@ -35,7 +35,10 @@ exports.createUserValidator = [
     .notEmpty().withMessage(message.password.required)
     .isLength({ min: 6 }).withMessage(message.password.length)
     .matches(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]+$/)
-    .withMessage(message.password.match)
+    .withMessage(message.password.match),
+    
+    body('roleId')
+    .notEmpty().withMessage(message.role.required)
 ];
 //End
 
@@ -109,7 +112,9 @@ exports.updateUserValidator = [
     .optional({checkFalsy: true})
     .isLength({ min: 6 }).withMessage(message.password.length)
     .matches(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]+$/)
-    .withMessage(message.password.match)
+    .withMessage(message.password.match),
+    body('roleId')
+    .notEmpty().withMessage(message.role.required)
 ];
 //check validator
 exports.validate = (req, res, next) => {
