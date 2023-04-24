@@ -41,6 +41,7 @@ module.exports = {
     // End
      // Role
      role:{
+        required: 'Role is required',
         taken: 'Name is already registered',
         getRole: "Role fetch successfully!",
         createRole: "Role added successfully!",
@@ -52,7 +53,10 @@ module.exports = {
     user:{
         getUser: "User fetch successfully!",  
         updateUser: "User updated successfully!",
-        deleteUser: "User has been deleted!"
+        deleteUser: "User has been deleted!",
+        required: 'User is required',
+        propertyRealtor: ' Property realtor is required',
+
     }
     // End
     

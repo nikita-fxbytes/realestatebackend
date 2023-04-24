@@ -5,7 +5,6 @@ const Role = require('../models/Role')
 exports.createRoleValidator = [
     body('name')
     .notEmpty().withMessage(message.name.required)
-    .isLength({min:3}).withMessage(message.name.length)
     .custom(async (value) => {
         const role = await Role.findOne({name: value});
         if(role){
@@ -28,6 +27,22 @@ exports.deleteAndEditRoleValidator = [
       });
     }),
   ];
+// End
+// Update role validation
+exports.updateRoleValidation = [
+  body('name')
+   .notEmpty().withMessage(message.name.required)
+   .custom(async (value, {req})=>{
+    const role = await Role.findOne({
+        name: value
+    });
+    if(role && role._id.toString() !== req.params.id){
+      console.log(message.name.taken)
+        throw new Error(message.role.taken);
+    }
+    return true;
+   }),
+]
 // End
 //check validator
 exports.validate = (req, res, next) => {

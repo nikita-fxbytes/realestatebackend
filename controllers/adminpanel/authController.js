@@ -1,4 +1,4 @@
-const User = require("../../models/User");
+const User = require('../../models/User');
 const Role = require("../../models/Role");
 
 const bcrypt = require('bcryptjs');
@@ -69,13 +69,26 @@ exports.logInUser = async(req, res) =>{
 exports.getAllUsers = async(req, res)=>{
     try {
         const roleName = req.query.roleName; // extract roleName from query params
+        console.log(roleName)
         let filter = {}; // create empty filter object
         // add roleName filter if provided
         if (roleName) {
             // fetch the role document using its name
             const role = await Role.findOne({ name: roleName });
             // add roleId filter based on the fetched role document
-            filter.roleId = role._id;
+            if(role){
+                filter.roleId = role._id;
+            }else {
+                // return empty array if role is null
+                res.json({
+                    status: true,
+                    users: [],
+                    message: message.user.getUser
+                })
+                return;
+            }
+           
+           
         }
         const users = await User.find(filter).populate({
             path: 'roleId',
@@ -89,6 +102,7 @@ exports.getAllUsers = async(req, res)=>{
         })
         
     } catch (error) {
+        console.log(error)
         res.status(contant.SERVER_ERROR).send(message.auth.serverError); 
     }
 }
