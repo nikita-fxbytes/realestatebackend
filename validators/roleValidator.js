@@ -37,7 +37,6 @@ exports.updateRoleValidation = [
         name: value
     });
     if(role && role._id.toString() !== req.params.id){
-      console.log(message.name.taken)
         throw new Error(message.role.taken);
     }
     return true;
