@@ -9,8 +9,6 @@ exports.createPropertyValidator = [
 
     body('price')
     .notEmpty().withMessage(message.property.price),
-    body('user')
-    .notEmpty().withMessage(message.user.required),
     body('propertyRealtor')
     .notEmpty().withMessage(message.user.propertyRealtor)
 ]

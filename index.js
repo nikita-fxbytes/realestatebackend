@@ -12,6 +12,7 @@ app.use(express.json());
 app.use('/api', require('./routes/auth'));
 app.use('/api', require('./routes/property'));
 app.use('/api', require('./routes/role'));
+app.use('/api', require('./routes/dashboard'));
 //end
 
 app.listen(port, () => {

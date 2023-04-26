@@ -57,7 +57,10 @@ module.exports = {
         required: 'User is required',
         propertyRealtor: ' Property realtor is required',
 
-    }
+    },
+    // End
+    // Dashboard
+    dashBoardCount: 'Count fetch seccessfully!'
     // End
     
 }

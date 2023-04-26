@@ -82,7 +82,11 @@ exports.updateProperty = async(req, res) => {
 exports.editProperty = async (req, res) =>{
     try {
         //property Edit
-       const property =  await Property.findById(req.params.id);
+       const property =  await Property.findById(req.params.id).populate(
+        {
+            path: 'propertyRealtor',
+            select: 'name email, mobile'
+        });
         res.json({
             status: true,
             property: property,
