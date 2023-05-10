@@ -5,7 +5,16 @@ const message = require('../../helper/admin/messages');
 //Get All role
 exports.getAllRoles = async(req, res)=>{
     try {
-        const roles = await Role.find();
+        const searchTerm =  req.body.searchTerm;
+        const sortColumn = req.body.sortColumn || 'createdAt';
+        const sortDirection = req.body.sortDirection || 'desc';
+        console.log(req.query) // get the search term from the query parameter
+        let roles;
+        if (searchTerm) {
+            roles = await Role.find({ name: { $regex: searchTerm, $options: "i" } }).sort({ [sortColumn]: sortDirection });
+        } else {
+            roles = await Role.find().sort({ [sortColumn]: sortDirection });
+        }
         res.json({
             status: true,
             roles: roles,

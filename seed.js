@@ -7,6 +7,7 @@ const bcrypt = require('bcryptjs');
 const seedData = async () => {
   try {
     await connectToMongo();
+    console.log('Connected to MongoDB');
 
     const roles = [
       {
@@ -15,6 +16,7 @@ const seedData = async () => {
     ];
 
     const createdRoles = await Role.create(roles);
+    console.log('Roles seed data inserted');
     //Store password encyp form
     const salt = await bcrypt.genSalt(10);
     const setSecurePassword = await bcrypt.hash('Qwerty@1', salt);
@@ -30,6 +32,7 @@ const seedData = async () => {
     ];
 
     await User.create(users);
+    console.log('Users seed data inserted');
 
     process.exit(); // terminate the script after seeding data
   } catch (err) {
