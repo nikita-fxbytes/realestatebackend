@@ -1,7 +1,7 @@
 require('dotenv').config();
 const connectToMongo = require('./db');
-const Role = require('./models/role');
-const User = require('./models/user');
+const Role = require('./models/Role');
+const User = require('./models/User');
 
 const bcrypt = require('bcryptjs');
 const seedData = async () => {

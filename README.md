@@ -1,1 +1,1 @@
-# realestatebackend
+node seed.js
