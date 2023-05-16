@@ -7,7 +7,7 @@ const {createRoleValidator, validate, deleteAndEditRoleValidator, updateRoleVali
 //Route 1: Get Role GET "api/roles" Login required
 router.post('/roles',middleware, roleCountroller.getAllRoles);
 //Route 2: Create Role POST "api/roles" Login required
-router.post('/roles',middleware, createRoleValidator, validate, roleCountroller.createRole);
+router.post('/roles/create',middleware, createRoleValidator, validate, roleCountroller.createRole);
 // Route 3 : Edit Role GET "api/roles" Login required
 router.get('/roles/:id',middleware, deleteAndEditRoleValidator, validate, roleCountroller.editRole);
 //Route 4: Update Role PUT "api/roles/:id". Login required

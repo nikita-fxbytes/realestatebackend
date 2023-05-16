@@ -8,16 +8,25 @@ exports.getAllRoles = async(req, res)=>{
         const searchTerm =  req.body.searchTerm;
         const sortColumn = req.body.sortColumn || 'createdAt';
         const sortDirection = req.body.sortDirection || 'desc';
-        console.log(req.query) // get the search term from the query parameter
+        const page = req.body.page || 1; // Get the current page number from the query params
+        const perPage = req.body.perPage || 10; // Get the number of results per page from the query params
         let roles;
+        let totalRoles;
+        const skip = (page - 1) * perPage; // Calculate the number of results to skip
         if (searchTerm) {
-            roles = await Role.find({ name: { $regex: searchTerm, $options: "i" } }).sort({ [sortColumn]: sortDirection });
+            roles = await Role.find({ name: { $regex: searchTerm, $options: "i" } }).sort({ [sortColumn]: sortDirection }).skip(skip).limit(perPage);
+            totalRoles = await Role.countDocuments({ name: { $regex: searchTerm, $options: "i" } });
         } else {
-            roles = await Role.find().sort({ [sortColumn]: sortDirection });
+            roles = await Role.find().sort({ [sortColumn]: sortDirection }).skip(skip).limit(perPage);
+            totalRoles = await Role.countDocuments();
         }
+        const totalPages = Math.ceil(totalRoles / perPage); // Calculate the total number of pages
         res.json({
             status: true,
             roles: roles,
+            totalRoles: totalRoles,
+            totalPages: totalPages,
+            currentPage: page,
             message: message.role.getRole
         })
         
