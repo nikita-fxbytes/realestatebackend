@@ -67,42 +67,65 @@ exports.logInUser = async(req, res) =>{
 // get all user
 //Get All property
 exports.getAllUsers = async(req, res)=>{
-    try {
-        const roleName = req.query.roleName; // extract roleName from query params
-        let filter = {}; // create empty filter object
-        // add roleName filter if provided
+    // try {
+        const searchTerm = req.body.searchTerm;
+        const roleName = req.body.roleName;
+        const sortColumn = req.body.sortColumn || 'createdAt';
+        const sortDirection = req.body.sortDirection || 'desc';
+        const page = req.body.page || 1;
+        const perPage = req.body.perPage || 10;
+        
+        // Create an empty filter object
+        let filter = {};
+    
+        // Add roleName filter if provided
         if (roleName) {
-            // fetch the role document using its name
-            const role = await Role.findOne({ name: roleName });
-            // add roleId filter based on the fetched role document
-            if(role){
-                filter.roleId = role._id;
-            }else {
-                // return empty array if role is null
-                res.json({
-                    status: true,
-                    users: [],
-                    message: message.user.getUser
-                })
-                return;
-            }
-           
-           
+          const role = await Role.findOne({ name: roleName });
+          if (role) {
+            filter.roleId = role._id;
+          } else {
+            res.json({
+              status: true,
+              users: [],
+              message: message.user.getUser
+            })
+            return;
+          }
         }
-        const users = await User.find(filter).populate({
+    
+        // Add search term filter if provided
+        if (searchTerm) {
+          filter.$or = [
+            { firstName: { $regex: searchTerm, $options: 'i' } },
+            { lastName: { $regex: searchTerm, $options: 'i' } },
+            { email: { $regex: searchTerm, $options: 'i' } }
+          ];
+        }
+    
+        // Count the total number of users matching the filter
+        const totalUsers = await User.countDocuments(filter);
+    
+        // Find the users matching the filter, sorted and paginated
+        const users = await User.find(filter)
+          .sort({ [sortColumn]: sortDirection })
+          .skip((page - 1) * perPage)
+          .limit(perPage)
+          .populate({
             path: 'roleId',
             select: 'name'
-        });
+          });
 
-        res.json({
+          res.json({
             status: true,
             users: users,
-            message: message.user.getUser
-        })
+            totalPages: Math.ceil(totalUsers / perPage),
+            currentPage: page,
+            message: message.user.getUser,
+          });
         
-    } catch (error) {
-        res.status(contant.SERVER_ERROR).send(message.auth.serverError); 
-    }
+    // } catch (error) {
+    //     res.status(contant.SERVER_ERROR).send(message.auth.serverError); 
+    // }
 }
 //end
 //Update user

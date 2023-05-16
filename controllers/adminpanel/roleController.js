@@ -1,15 +1,16 @@
 const Role = require('../../models/Role');
 const contant = require('../../helper/constants');
 const message = require('../../helper/admin/messages');
+const constants = require('../../helper/constants');
 
 //Get All role
 exports.getAllRoles = async(req, res)=>{
     try {
         const searchTerm =  req.body.searchTerm;
-        const sortColumn = req.body.sortColumn || 'createdAt';
-        const sortDirection = req.body.sortDirection || 'desc';
-        const page = req.body.page || 1; // Get the current page number from the query params
-        const perPage = req.body.perPage || 10; // Get the number of results per page from the query params
+        const sortColumn = req.body.sortColumn || constants.ORDERBY.CREATEDAT;
+        const sortDirection = req.body.sortDirection || constants.ORDERBY.DESC;
+        const page = req.body.page || constants.LIMIT.ITEMONE; // Get the current page number from the query params
+        const perPage = req.body.perPage || constants.LIMIT.ITEMTEN; // Get the number of results per page from the query params
         let roles;
         let totalRoles;
         const skip = (page - 1) * perPage; // Calculate the number of results to skip
