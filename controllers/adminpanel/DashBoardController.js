@@ -16,7 +16,10 @@ exports.getAllCount = async(req, res)=>{
         
     } catch (error) {
         console.log(error)
-        res.status(contant.SERVER_ERROR).send(message.auth.serverError); 
+        res.json({
+            status: false,
+            message: message.auth.serverError
+        }); 
     }
 }
 //end

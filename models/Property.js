@@ -34,11 +34,18 @@ const PropertySchema = new Schema({
         type: mongoose.Schema.Types.ObjectId,
         ref: 'user',
         require: true
+    },
+    status: {
+        type: Number,
+        enum: [0, 1],
+        default: 1
     }
    
 },{
     timestamps: true,
 });
-
+PropertySchema.virtual('statusText').get(function() {
+    return this.status === 1 ? 'Active' : 'Inactive';
+});
 const Property = mongoose.model('property', PropertySchema);
 module.exports = Property;

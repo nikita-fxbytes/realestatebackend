@@ -4,44 +4,71 @@ const message = require('../../helper/admin/messages');
 const constants = require('../../helper/constants');
 
 //Get All role
-exports.getAllRoles = async(req, res)=>{
+exports.getAllRoles = async (req, res) => {
     try {
-        const searchTerm =  req.body.searchTerm;
-        const sortColumn = req.body.sortColumn || constants.ORDERBY.CREATEDAT;
-        const sortDirection = req.body.sortDirection || constants.ORDERBY.DESC;
-        const page = req.body.page || constants.LIMIT.ITEMONE; // Get the current page number from the query params
-        const perPage = req.body.perPage || constants.LIMIT.ITEMTEN; // Get the number of results per page from the query params
-        let roles;
-        let totalRoles;
-        const skip = (page - 1) * perPage; // Calculate the number of results to skip
-        if (searchTerm) {
-            roles = await Role.find({ name: { $regex: searchTerm, $options: "i" } }).sort({ [sortColumn]: sortDirection }).skip(skip).limit(perPage);
-            totalRoles = await Role.countDocuments({ name: { $regex: searchTerm, $options: "i" } });
+      const { searchTerm, sortColumn, sortDirection, page, perPage, onlyActive, status } = req.body;
+      let roles;
+      let totalRoles;
+      const skip = (page - 1) * perPage;
+  
+      const searchQuery = {};
+  
+      if (searchTerm) {
+        searchQuery.name = { $regex: searchTerm, $options: "i" };
+      }
+   
+      if (status !== "") {
+        if (status === constants.STATUS.ACTIVE) {
+            searchQuery.status = status;;
         } else {
-            roles = await Role.find().sort({ [sortColumn]: sortDirection }).skip(skip).limit(perPage);
-            totalRoles = await Role.countDocuments();
+            searchQuery.status = status;
         }
-        const totalPages = Math.ceil(totalRoles / perPage); // Calculate the total number of pages
-        res.json({
-            status: true,
-            roles: roles,
-            totalRoles: totalRoles,
-            totalPages: totalPages,
-            currentPage: page,
-            message: message.role.getRole
-        })
-        
+      }
+
+      if (onlyActive !== "") {
+        if (onlyActive === constants.STATUS.ACTIVE) {
+          searchQuery.status = onlyActive;
+        } else {
+          searchQuery.status = onlyActive;
+        }
+      }
+  
+      roles = await Role.find(searchQuery)
+        .sort({ [sortColumn]: sortDirection })
+        .skip(skip)
+        .limit(perPage);
+      totalRoles = await Role.countDocuments(searchQuery);
+  
+      const totalPages = Math.ceil(totalRoles / perPage);
+      // Map roles to include the statusText property
+      const rolesWithStatusText = roles.map(role => {
+          return {
+          ...role._doc,
+          statusText: role.statusText
+          };
+      });
+      res.json({
+        status: true,
+        roles: rolesWithStatusText,
+        totalRoles: totalRoles,
+        totalPages: totalPages,
+        currentPage: page,
+        message: message.role.getRole,
+      });
     } catch (error) {
-        res.status(contant.SERVER_ERROR).send(message.auth.serverError); 
+      res.json({
+            status: false,
+            message: message.auth.serverError
+        });
     }
-}
+  };
 //end
 //Create role
 exports.createRole = async(req, res)=>{
     try {
-        const {name} = req.body;
+        const {name, status} = req.body;
         const saveRole = new Role({
-            name
+            name, status
         });
         const role = await saveRole.save();
         res.json({
@@ -50,16 +77,19 @@ exports.createRole = async(req, res)=>{
             message: message.role.createRole
         })
     } catch (error) {
-        res.status(contant.SERVER_ERROR).send(message.auth.serverError);
+        res.json({
+            status: false,
+            message: message.auth.serverError
+        });
     }
 }
 //End
 //Update role
 exports.updateRole = async(req, res) => {
     try {
-        const {name} = req.body;
+        const {name, status} = req.body;
         const role = await Role.findByIdAndUpdate(req.params.id, {$set:{
-            name
+            name, status
         } 
         }, {new: true});
         res.json({
@@ -68,7 +98,10 @@ exports.updateRole = async(req, res) => {
             message: message.role.updateRole
         });
     } catch (error) {
-        res.status(contant.SERVER_ERROR).send(message.auth.serverError); 
+        res.json({
+            status: false,
+            message: message.auth.serverError
+        }); 
     }
 }
 // End
@@ -84,7 +117,10 @@ exports.editRole = async (req, res) =>{
         });
         //End
     } catch (error) {
-        res.status(contant.SERVER_ERROR).send(message.auth.serverError);   
+        res.json({
+            status: false,
+            message: message.auth.serverError
+        });   
     }
 }
 // End 
@@ -100,7 +136,10 @@ exports.deleteRole = async(req, res) =>{
         //End
         
     } catch (error) {
-        res.status(contant.SERVER_ERROR).send(message.auth.serverError);   
+        res.json({
+            status: false,
+            message: message.auth.serverError
+        });   
     }
 }
 // End

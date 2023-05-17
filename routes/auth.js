@@ -16,4 +16,9 @@ router.get('/users/:id',middleware, deleteAndEditUserValidator, validate, authCo
 router.put('/users/:id',middleware, deleteAndEditUserValidator, updateUserValidator, validate, authController.updateUser);
 //Route 5: Delete User DELETE "api/users/:id".  Login required
 router.delete('/users/:id', middleware, deleteAndEditUserValidator, validate, authController.deleteUser);
+// Route 6: Get login user details using GET "api/profile" Login required
+router.get('/profile', middleware, authController.getLoggedInUser);
+// Route 7: Get login user details using GET "api/profile" Login required
+router.put('/profile', middleware, authController.updateProfile);
+
 module.exports = router;

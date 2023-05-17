@@ -5,9 +5,9 @@ const propertyCountroller = require('../controllers/adminpanel/propertyControlle
 const {createPropertyValidator, validate, deleteAndEditPropertyValidator} = require('../validators/propertyValidator');
 
 //Route 1: Get Property GET "api/properties" Login required
-router.get('/properties',middleware, propertyCountroller.getAllProperties);
+router.post('/properties',middleware, propertyCountroller.getAllProperties);
 //Route 2: Create Property POST "api/properties" Login required
-router.post('/properties',middleware, createPropertyValidator, validate, propertyCountroller.createProperty);
+router.post('/properties/create',middleware, createPropertyValidator, validate, propertyCountroller.createProperty);
 // Route 3 : Edit Property GET "api/properties" Login required
 router.get('/properties/:id',middleware, deleteAndEditPropertyValidator, validate, propertyCountroller.editProperty);
 //Route 4: Update Property PUT "api/properties/:id". Login required

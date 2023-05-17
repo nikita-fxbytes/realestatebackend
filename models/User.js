@@ -24,10 +24,17 @@ const UserSchema = new Schema({
         ref: 'role',
         require: true
     },
+    status: {
+        type: Number,
+        enum: [0, 1],
+        default: 1
+    }
    
 },{
     timestamps: true,
 });
-
+UserSchema.virtual('statusText').get(function() {
+    return this.status === 1 ? 'Active' : 'Inactive';
+});
 const User = mongoose.model('user', UserSchema);
 module.exports = User;

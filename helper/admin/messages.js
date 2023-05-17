@@ -27,7 +27,8 @@ module.exports = {
         getProperty: "Property fetch successfully!",
         createProperty: "Property added successfully!",
         updateProperty: "Property updated successfully!",
-        deleteProperty: "Property has been deleted!"
+        deleteProperty: "Property has been deleted!",
+        notFound:"User not found"
     },
     // End
     // Auth
@@ -36,7 +37,9 @@ module.exports = {
         serverError: "Internal server error",
         createUser: "User create successfully!",
         loginUser: "login successfully!",
-        unauthenticated:"Please authenticate using a valid token"
+        unauthenticated:"Please authenticate using a valid token",
+        notFound:"Role not found",
+        userNotFound: "User not found"
     },
     // End
      // Role

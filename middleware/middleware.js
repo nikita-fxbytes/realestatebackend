@@ -6,9 +6,9 @@ const middleware = (req, res, next) =>{
     //Get the user from the jwt token and add id to req object
     const token = req.header('auth-token');
     if(!token){
-        res.status(constants.unauthenticated).json({
+        res.status(constants.STATUSCODE.UNAUTHENTICATED).json({
             message: message.auth.unauthenticated,
-            status: constants.unauthenticated
+            status: constants.STATUSCODE.UNAUTHENTICATED
         });
     }
     try {
@@ -17,9 +17,9 @@ const middleware = (req, res, next) =>{
         next();
         
     } catch (error) {
-        res.status(constants.unauthenticated).json({
+        res.status(constants.STATUSCODE.UNAUTHENTICATED).json({
             message: message.auth.unauthenticated,
-            status: constants.unauthenticated
+            status: constants.STATUSCODE.UNAUTHENTICATED
         })
     }
 }
