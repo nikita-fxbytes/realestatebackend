@@ -276,7 +276,10 @@ exports.updateProfile = async (req, res) => {
   
       res.json({ message: 'Profile updated', user: updatedUser });
     } catch (error) {
-      res.status(500).json({ message: 'Server error' });
+      res.json({
+            status: false,
+            message: message.auth.serverError
+        });
     }
   };
   
