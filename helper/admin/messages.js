@@ -1,5 +1,8 @@
 module.exports = {
     // Login and register
+    status:{
+        required: 'Status is required',
+    },
     name:{
         required: 'Name is required',
         length:"Name must be at least 3 characters"
@@ -63,7 +66,7 @@ module.exports = {
     },
     // End
     // Dashboard
-    dashBoardCount: 'Count fetch seccessfully!'
+    dashBoardCount: 'Count fetch seccessfully!',
     // End
-    
+    notFound: 'Id not found'
 }
