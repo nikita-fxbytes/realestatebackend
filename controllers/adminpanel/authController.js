@@ -254,45 +254,52 @@ exports.getLoggedInUser = async (req, res) => {
 // End
 // Update profile
 exports.updateProfile = async (req, res) => {
-    try {
-      const { name, email, mobile } = req.body;
-      const userId = req.user.id; // Get the user ID from the authenticated token
-  
-      // Find the user by ID
-      const user = await User.findById(userId);
-  
-      if (!user) {
-        res.json({
-            status: false,
-            message: message.auth.userNotFound
-        });
-      }
-  
-      // Update the user's profile properties
-      user.name = name || user.name;
-      user.email = email || user.email;
-      user.mobile = mobile || user.mobile;
-        // Check if email is provided and update it
-        // if (email) {
-        //     if (email !== user.email) {
-        //     res.json({
-        //         status: constants.STATUSCODE.UNAUTHENTICATED,
-        //         message: 'Unauthorized email update'
-        //     });
-        //     }
-        //     user.email = email;
-        // }
-      // Save the updated user
-      const updatedUser = await user.save();
-  
-      res.json({ message: 'Profile updated', user: updatedUser });
-    } catch (error) {
-        console.log(error,"error")
-      res.json({
-            status: false,
-            message: message.auth.serverError
-        });
+  try {
+    const { name, email, mobile } = req.body;
+    const userId = req.user.id; // Get the user ID from the authenticated token
+
+    // Find the user by ID
+    const user = await User.findById(userId);
+
+    if (!user) {
+      return res.json({
+        status: false,
+        message: message.auth.userNotFound
+      });
     }
-  };
+
+    // Update the user's profile properties
+    user.name = name || user.name;
+    user.email = email || user.email;
+    user.mobile = mobile || user.mobile;
+
+    // Check if email is provided and update it
+    // if (email) {
+    //   if (email !== user.email) {
+    //     user.email = email || user.email;
+    //     return res.json({
+    //       status: constants.STATUSCODE.UNAUTHENTICATED,
+    //       message: 'Unauthorized email update'
+    //     });
+    //   }
+      
+    // }
+
+    // Save the updated user
+    const updatedUser = await user.save();
+
+    return res.json({
+      status: true,
+      user: updatedUser,
+      message: 'Profile updated'
+    });
+  } catch (error) {
+    console.log(error, "error");
+    return res.json({
+      status: false,
+      message: message.auth.serverError
+    });
+  }
+};
   
   // Get logged-in user details
