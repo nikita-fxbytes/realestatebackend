@@ -20,5 +20,4 @@ router.delete('/users/:id', middleware, deleteAndEditUserValidator, validate, au
 router.get('/profile', middleware, authController.getLoggedInUser);
 // Route 7: Get login user details using GET "api/profile" Login required
 router.put('/profile', middleware,updateProfileValidator, validate, authController.updateProfile);
-
 module.exports = router;

@@ -1,4 +1,5 @@
 const mongoose = require('mongoose') ;
+const { STATUS } = require('../helper/constants');
 const { Schema } = mongoose;
 const RoleSchema = new Schema({
     name:{
@@ -15,7 +16,7 @@ const RoleSchema = new Schema({
     timestamps: true,
 });
 RoleSchema.virtual('statusText').get(function() {
-    return this.status === 1 ? 'Active' : 'Inactive';
+    return this.status === 1 ? STATUS.ACTIVETEXT : STATUS.INACTIVETEXT;
 });
 const Role = mongoose.model('role', RoleSchema);
 module.exports = Role;

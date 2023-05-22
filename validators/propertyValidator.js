@@ -3,14 +3,22 @@ const message = require('../helper/admin/messages');
 const Property = require('../models/Property')
 //Create property
 exports.createPropertyValidator = [
-    body('name')
-    .notEmpty().withMessage(message.name.required)
-    .isLength({min:3}).withMessage(message.name.length),
+  body('name')
+  .notEmpty().withMessage(message.name.required)
+  .isLength({min:3}).withMessage(message.name.length),
 
-    body('price')
-    .notEmpty().withMessage(message.property.price),
-    body('propertyRealtor')
-    .notEmpty().withMessage(message.user.propertyRealtor)
+  body('price')
+  .notEmpty().withMessage(message.property.price),
+  body('location')
+  .notEmpty().withMessage(message.property.location),
+  body('squareFeet')
+  .notEmpty().withMessage(message.property.square_feet),
+  body('bedrooms')
+  .notEmpty().withMessage(message.property.bedrooms),
+  body('bathrooms')
+  .notEmpty().withMessage(message.property.bathrooms),
+  body('propertyRealtor')
+  .notEmpty().withMessage(message.user.propertyRealtor)
 ]
 //End
 // Delete Property

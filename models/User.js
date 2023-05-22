@@ -1,4 +1,5 @@
 const mongoose = require('mongoose') ;
+const { STATUS } = require('../helper/constants');
 const { Schema } = mongoose;
 const UserSchema = new Schema({
     name:{
@@ -34,7 +35,7 @@ const UserSchema = new Schema({
     timestamps: true,
 });
 UserSchema.virtual('statusText').get(function() {
-    return this.status === 1 ? 'Active' : 'Inactive';
+    return this.status === 1 ? STATUS.ACTIVETEXT : STATUS.INACTIVETEXT;
 });
 const User = mongoose.model('user', UserSchema);
 module.exports = User;

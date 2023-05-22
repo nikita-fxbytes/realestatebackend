@@ -10,6 +10,10 @@ module.exports = {
     },
     STATUS: {
       ACTIVE: 1,
-      INACTIVE:0
+      INACTIVE:0,
+      ACTIVETEXT: 'Active',
+      INACTIVETEXT: 'InActive',
+      READ: 'Read',
+      UNREAD: 'Unread'
     }
 }

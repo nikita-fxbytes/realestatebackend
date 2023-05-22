@@ -27,6 +27,10 @@ module.exports = {
     // Property
     property:{
         price:'Price is required',
+        bedrooms:'Bedrooms is required',
+        location:'Location is required',
+        bathrooms:'Bathrooms is required',
+        square_feet:'Squarefeet is required',
         getProperty: "Property fetch successfully!",
         createProperty: "Property added successfully!",
         updateProperty: "Property updated successfully!",
@@ -68,5 +72,18 @@ module.exports = {
     // Dashboard
     dashBoardCount: 'Count fetch seccessfully!',
     // End
-    notFound: 'Id not found'
+    notFound: 'Id not found',
+    // inquiry
+    inquiry:{
+        message: "Message is required",
+        property: "Property is required",
+        getInquiry: "Inquiry fetch successfully!",
+        createInquiry: "Inquiry added successfully!",
+        updateInquiry: "Inquiry updated successfully!",
+        deleteInquiry: "Inquiry has been deleted!",
+        notFound:"Property not found",
+        getRealtors: "Realtor fetch successfully!",
+        notRealtorFound:"No realtors found"
+    }
+    // End
 }

@@ -13,6 +13,7 @@ app.use('/api', require('./routes/auth'));
 app.use('/api', require('./routes/property'));
 app.use('/api', require('./routes/role'));
 app.use('/api', require('./routes/dashboard'));
+app.use('/api', require('./routes/inquiry'));
 //end
 
 app.listen(port, () => {
