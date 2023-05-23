@@ -1,26 +1,25 @@
 const User = require('../../models/User');
 const Role = require("../../models/Role");
-
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
-const contant = require('../../helper/constants');
-const message = require('../../helper/admin/messages');
+const message = require('../../helper/customer/messages');
 const constants = require('../../helper/constants');
-
+const { STATUS,ROLENAME } = require('../../helper/constants');
 //Create User
 exports.createUser = async(req, res)=>{
     try {
-        const {name, email, mobile, password, roleId, status} =req.body;
+        let {name, email, mobile, password} =req.body;
         // Check if the role ID exists
-        const existingRole = await Role.findById(roleId);
-        if (!existingRole) {
-            return res.status(contant.STATUSCODE.NOT_FOUND).json({
+        // const existingRole = await Role.findById(roleId);
+        const role = await Role.findOne({ name: ROLENAME.CUSTOMER });
+        if (!role) {
+            return res.status(constants.STATUSCODE.NOT_FOUND).json({
                 status: false,
-                message: message.auth.notFound,
+                message: message.role.notFound,
             });
         }
         //Store password encyp form
-        const salt = await bcrypt.genSalt(contant.LIMIT.ITEMTEN);
+        const salt = await bcrypt.genSalt(constants.LIMIT.ITEMTEN);
         const setSecurePassword = await bcrypt.hash(password, salt);
         //End
         //User create
@@ -29,63 +28,77 @@ exports.createUser = async(req, res)=>{
             email,
             mobile,
             password: setSecurePassword,
-            roleId,
-            status
+            roleId:role._id,
+            status: STATUS.ACTIVE
         });
         //End
         //Create auth token
-        // const data = {
-        //     user:{
-        //         id: user.id
-        //     }
-        // }
-        // const authToken = jwt.sign(data, contant.JWT_SECRET);
-        //End
-        //Send responce
-        res.json({
-            status: true,
-            // authToken: authToken,
-            message: message.auth.createUser
-        });
-        //End
-
-    } catch (error) {
-        res.json({
-            status: false,
-            message: message.auth.serverError
-        });
-    }
-}
-//End
-//Login user
-exports.logInUser = async(req, res) =>{
-    try {
-        let user = await User.findOne({email:req.body.email});
         const data = {
             user:{
                 id: user.id
             }
         }
-        const authToken = jwt.sign(data, contant.JWT_SECRET);
+        const authToken = jwt.sign(data, constants.JWT_SECRET);
+        //End
+        //Send responce
         res.json({
             status: true,
             authToken: authToken,
-            message: message.auth.loginUser
-        })
-        
+            user: {
+                id: user._id,
+                name: user.name,
+              },
+            message: message.auth.createUser
+        });
+        //End
+
     } catch (error) {
+        console.log(error)
         res.json({
             status: false,
-            message: message.auth.serverError
-        }); 
+            message: message.serverError
+        });
     }
 }
 //End
+//Login user
+exports.logInUser = async (req, res) => {
+    try {
+      let user = await User.findOne({ email: req.body.email }).populate("roleId");
+      if (!user || user.roleId.name !== ROLENAME.CUSTOMER) {
+        return res.json({
+          status: false,
+          message: message.auth.invalidCredentials,
+        });
+      }
+      const data = {
+        user: {
+          id: user.id,
+        },
+      };
+      const authToken = jwt.sign(data, constants.JWT_SECRET);
+      res.json({
+        status: true,
+        authToken: authToken,
+        user: {
+            id: user._id,
+            name: user.name,
+          },
+        message: message.auth.loginUser,
+      });
+    } catch (error) {
+      res.json({
+        status: false,
+        message: message.serverError,
+      });
+    }
+  };
+//End
 // get all user
 //Get All property
-exports.getAllUsers = async(req, res)=>{
+exports.getRealtorUsers = async(req, res)=>{
     try {
-        const{searchTerm, roleName, sortColumn, sortDirection, page, perPage, onlyActive, status} =req.body;
+        const{ roleName, sortColumn, sortDirection, page, perPage, onlyActive} =req.body;
         // Create an empty filter object
         let filter = {};
         // Add roleName filter if provided
@@ -97,34 +110,13 @@ exports.getAllUsers = async(req, res)=>{
             res.json({
               status: true,
               users: [],
-              message: message.user.getUser
+              message: message.auth.getUser
             })
             return;
           }
         }
     
         // Add search term filter if provided
-        if (searchTerm) {
-            const searchTermRegex = /^[0-9]+$/; // Regular expression to match numbers only
-            if (searchTermRegex.test(searchTerm)) {
-              filter.mobile = parseInt(searchTerm); // Convert the valid number search term to a number
-            } else {
-              filter.$or = [
-                { name: { $regex: searchTerm, $options: 'i' } },
-                { email: { $regex: searchTerm, $options: 'i' } },
-                { roleId: { $in: await Role.find({ name: { $regex: searchTerm, $options: 'i' } }).distinct('_id') } } // Include role name search
-              ];
-            }
-          }
-
-          if (status !== "") {
-            if (status === constants.STATUS.ACTIVE) {
-                filter.status = status;;
-            } else {
-                filter.status = status;
-            }
-          }
-    
           if (onlyActive !== "") {
             if (onlyActive === constants.STATUS.ACTIVE) {
                 filter.status = onlyActive;
@@ -156,76 +148,20 @@ exports.getAllUsers = async(req, res)=>{
             users: userWithStatusText,
             totalPages: Math.ceil(totalUsers / perPage),
             currentPage: page,
-            message: message.user.getUser,
+            message: message.auth.getUser,
           });
         
     } catch (error) {
         res.json({
             status: false,
-            message: message.auth.serverError
+            message: message.serverError
         }); 
     }
 }
 //end
-//Update user
-exports.updateUser = async(req, res) => {
-    try {
-        const {name, email, mobile, password, roleId, status} = req.body;
-        const user = await User.findByIdAndUpdate(req.params.id, {$set:{
-            name, email, mobile, password, roleId, status
-        } 
-        }, {new: true});
-        res.json({
-            status: true,
-            user: user,
-            message: message.user.updateUser
-        });
-    } catch (error) {
-        res.json({
-            status: false,
-            message: message.auth.serverError
-        }); 
-    }
-}
-// End
-// Update user
-exports.editUser = async (req, res) =>{
-    try {
-        //user Edit
-       const user =  await User.findById(req.params.id);
-        res.json({
-            status: true,
-            user: user,
-            message:message.user.getUser
-        });
-        //End
-    } catch (error) {
-        res.json({
-            status: false,
-            message: message.auth.serverError
-        });   
-    }
-}
-// End 
-//Delete User
-exports.deleteUser = async(req, res) =>{
-    try {
-        //Propery delete
-        await User.findByIdAndDelete(req.params.id);
-        res.json({
-            status: true,
-            message: message.user.deleteUser
-        });
-        //End
-        
-    } catch (error) {
-        res.json({
-            status: false,
-            message: message.auth.serverError
-        });   
-    }
-}
-// End
+
+
+
 // Get logged-in user details
 exports.getLoggedInUser = async (req, res) => {
     try {
@@ -242,12 +178,12 @@ exports.getLoggedInUser = async (req, res) => {
       return res.json({
         status: true,
         user: user,
-        message: message.user.getUser,
+        message: message.auth.getUser,
       });
     } catch (error) {
       return res.json({
         status: false,
-        message: message.auth.serverError,
+        message: message.serverError,
       });
     }
   };
@@ -303,3 +239,4 @@ exports.updateProfile = async (req, res) => {
 };
   
   // Get logged-in user details
+

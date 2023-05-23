@@ -27,10 +27,6 @@ module.exports = {
     // Property
     property:{
         price:'Price is required',
-        bedrooms:'Bedrooms is required',
-        location:'Location is required',
-        bathrooms:'Bathrooms is required',
-        square_feet:'Squarefeet is required',
         getProperty: "Property fetch successfully!",
         createProperty: "Property added successfully!",
         updateProperty: "Property updated successfully!",

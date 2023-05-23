@@ -1,8 +1,8 @@
 const express = require('express');
 const router = express.Router();
-const middleware = require('../middleware/middleware')
-const inquiryCountroller = require('../controllers/adminpanel/InquiryController');
-const {createInquiryValidator, validate, deleteAndEditInquiryValidator} = require('../validators/inquiryValidators');
+const middleware = require('../../middleware/middleware')
+const inquiryCountroller = require('../../controllers/adminpanel/InquiryController');
+const {createInquiryValidator, validate, deleteAndEditInquiryValidator} = require('../../validators/admin/inquiryValidators');
 
 //Route 1: Get Inquiry GET "api/inquiry" Login required
 router.post('/inquiries',middleware, inquiryCountroller.getAllInquiries);
@@ -18,5 +18,4 @@ router.delete('/inquiries/:id',middleware,deleteAndEditInquiryValidator, validat
 router.put('/inquiries/:id/mark-as-read',middleware,deleteAndEditInquiryValidator, validate, inquiryCountroller.updateReadInquiry);
 //Route 7: retator "api/retator/".  Login required
 router.post('/retator', middleware,inquiryCountroller.getRealtorsWithMostInquiries);
-
 module.exports = router;

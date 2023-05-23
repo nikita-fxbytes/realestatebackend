@@ -15,5 +15,8 @@ module.exports = {
       INACTIVETEXT: 'InActive',
       READ: 'Read',
       UNREAD: 'Unread'
+    },
+    ROLENAME:{
+        CUSTOMER:"customer"
     }
 }

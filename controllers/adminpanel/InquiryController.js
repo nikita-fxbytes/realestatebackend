@@ -331,7 +331,6 @@ exports.getRealtorsWithMostInquiries = async (req, res) => {
             message: messages.inquiry.getRealtors
         });
     } catch (error) {
-        console.log(error, "error");
         res.json({
             status: false,
             message: messages.auth.serverError

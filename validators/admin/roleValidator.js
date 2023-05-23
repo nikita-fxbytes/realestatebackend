@@ -1,6 +1,6 @@
 const {body, check,validationResult} = require('express-validator');
-const message = require('../helper/admin/messages');
-const Role = require('../models/Role')
+const message = require('../../helper/admin/messages');
+const Role = require('../../models/Role')
 //Create Role
 exports.createRoleValidator = [
     body('name')

@@ -1,5 +1,4 @@
 const mongoose = require('mongoose') ;
-const { STATUS } = require('../helper/constants');
 const { Schema } = mongoose;
 const PropertySchema = new Schema({
     name:{
@@ -40,13 +39,21 @@ const PropertySchema = new Schema({
         type: Number,
         enum: [0, 1],
         default: 1
-    }
+    },
+    slug: {
+        type: String,
+        unique: true,
+        required: true,
+    },
+    description:{
+        type: String
+    },
    
 },{
     timestamps: true,
 });
 PropertySchema.virtual('statusText').get(function() {
-    return this.status === 1 ? STATUS.ACTIVETEXT :  STATUS.INACTIVETEXT;
+    return this.status === 1 ? 'Active' : 'Inactive';
 });
 const Property = mongoose.model('property', PropertySchema);
 module.exports = Property;

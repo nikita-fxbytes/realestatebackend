@@ -65,8 +65,9 @@ exports.getAllRoles = async (req, res) => {
 //end
 //Create role
 exports.createRole = async(req, res)=>{
-    try {
-        const {name, status} = req.body;
+    // try {
+        let {name, status} = req.body;
+        name = name.toLowerCase(); // Convert name to lowercase
         const saveRole = new Role({
             name, status
         });
@@ -76,12 +77,12 @@ exports.createRole = async(req, res)=>{
             role: role,
             message: message.role.createRole
         })
-    } catch (error) {
-        res.json({
-            status: false,
-            message: message.auth.serverError
-        });
-    }
+    // } catch (error) {
+    //     res.json({
+    //         status: false,
+    //         message: message.auth.serverError
+    //     });
+    // }
 }
 //End
 //Update role

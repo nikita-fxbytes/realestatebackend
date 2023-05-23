@@ -1,8 +1,8 @@
 const express = require('express');
 const router = express.Router();
-const authController = require('../controllers/adminpanel/authController');
-const {createUserValidator, validate, logInValidator, deleteAndEditUserValidator, updateUserValidator, updateProfileValidator} = require('../validators/authValidators');
-const middleware = require('../middleware/middleware')
+const authController = require('../../controllers/adminpanel/authController');
+const {createUserValidator, validate, logInValidator, deleteAndEditUserValidator, updateUserValidator, updateProfileValidator} = require('../../validators/admin/authValidators');
+const middleware = require('../../middleware/middleware')
 //Route 1 : Create a user using POST "/api/auth/create-user". no login required
 router.post('/users/create', createUserValidator, validate,  authController.createUser);
 
@@ -20,4 +20,5 @@ router.delete('/users/:id', middleware, deleteAndEditUserValidator, validate, au
 router.get('/profile', middleware, authController.getLoggedInUser);
 // Route 7: Get login user details using GET "api/profile" Login required
 router.put('/profile', middleware,updateProfileValidator, validate, authController.updateProfile);
+
 module.exports = router;

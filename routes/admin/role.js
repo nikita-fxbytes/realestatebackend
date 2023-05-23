@@ -1,8 +1,8 @@
 const express = require('express');
 const router = express.Router();
-const middleware = require('../middleware/middleware')
-const roleCountroller = require('../controllers/adminpanel/roleController');
-const {createRoleValidator, validate, deleteAndEditRoleValidator, updateRoleValidation} = require('../validators/roleValidator');
+const middleware = require('../../middleware/middleware')
+const roleCountroller = require('../../controllers/adminpanel/roleController');
+const {createRoleValidator, validate, deleteAndEditRoleValidator, updateRoleValidation} = require('../../validators/admin/roleValidator');
 
 //Route 1: Get Role GET "api/roles" Login required
 router.post('/roles',middleware, roleCountroller.getAllRoles);

@@ -1,8 +1,8 @@
 const express = require('express');
 const router = express.Router();
-const middleware = require('../middleware/middleware')
-const propertyCountroller = require('../controllers/adminpanel/propertyController');
-const {createPropertyValidator, validate, deleteAndEditPropertyValidator} = require('../validators/propertyValidator');
+const middleware = require('../../middleware/middleware')
+const propertyCountroller = require('../../controllers/adminpanel/propertyController');
+const {createPropertyValidator, validate, deleteAndEditPropertyValidator} = require('../../validators/admin/propertyValidator');
 
 //Route 1: Get Property GET "api/properties" Login required
 router.post('/properties',middleware, propertyCountroller.getAllProperties);

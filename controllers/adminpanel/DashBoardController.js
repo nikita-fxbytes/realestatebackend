@@ -1,5 +1,6 @@
 const Property = require('../../models/Property');
 const User = require('../../models/User');
+const contant = require('../../helper/constants');
 const message = require('../../helper/admin/messages');
 
 //Get All property

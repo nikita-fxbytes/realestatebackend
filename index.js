@@ -8,13 +8,19 @@ const port = process.env.PORT;
 app.use(express.json());
 app.use(cors())
 app.use(express.json());
-//Routes
-app.use('/api', require('./routes/auth'));
-app.use('/api', require('./routes/property'));
-app.use('/api', require('./routes/role'));
-app.use('/api', require('./routes/dashboard'));
-app.use('/api', require('./routes/inquiry'));
+//Admin Routes
+app.use('/api/admin', require('./routes/admin/auth'));
+app.use('/api/admin', require('./routes/admin/property'));
+app.use('/api/admin', require('./routes/admin/role'));
+app.use('/api/admin', require('./routes/admin/dashboard'));
+app.use('/api/admin', require('./routes/admin/inquiry'));
 //end
+
+//Customer Routes
+app.use('/api', require('./routes/customer/property'));
+app.use('/api', require('./routes/customer/inquiry'));
+app.use('/api', require('./routes/customer/auth'))
+// End
 
 app.listen(port, () => {
   console.log(`Example app listening on port ${port}`)
