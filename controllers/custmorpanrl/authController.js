@@ -9,7 +9,7 @@ const { STATUS,ROLENAME } = require('../../helper/constants');
 exports.createUser = async(req, res)=>{
     try {
         let {name, email, mobile, password} =req.body;
-        // Check if the role ID exists
+        email = email.toLowerCase(); // Convert name to lowercase
         // const existingRole = await Role.findById(roleId);
         const role = await Role.findOne({ name: ROLENAME.CUSTOMER });
         if (!role) {
@@ -53,7 +53,6 @@ exports.createUser = async(req, res)=>{
         //End
 
     } catch (error) {
-        console.log(error)
         res.json({
             status: false,
             message: message.serverError
@@ -98,12 +97,19 @@ exports.logInUser = async (req, res) => {
 //Get All property
 exports.getRealtorUsers = async(req, res)=>{
     try {
-        const{ roleName, sortColumn, sortDirection, page, perPage, onlyActive} =req.body;
+        const{ sortColumn, sortDirection, page, perPage, onlyActive} =req.body;
+        const roles = await Role.findOne({ name: ROLENAME.REALTOR });
+        if (!roles) {
+            return res.status(constants.STATUSCODE.NOT_FOUND).json({
+                status: false,
+                message: message.role.notFound,
+            });
+        }
         // Create an empty filter object
         let filter = {};
         // Add roleName filter if provided
-        if (roleName) {
-          const role = await Role.findOne({ name: roleName });
+        // if (roleName) {
+          const role = await Role.findOne({ name: roles.name });
           if (role) {
             filter.roleId = role._id;
           } else {
@@ -114,7 +120,7 @@ exports.getRealtorUsers = async(req, res)=>{
             })
             return;
           }
-        }
+        // }
     
         // Add search term filter if provided
           if (onlyActive !== "") {
@@ -152,6 +158,7 @@ exports.getRealtorUsers = async(req, res)=>{
           });
         
     } catch (error) {
+      console.log(error)
         res.json({
             status: false,
             message: message.serverError
@@ -166,7 +173,6 @@ exports.getRealtorUsers = async(req, res)=>{
 exports.getLoggedInUser = async (req, res) => {
     try {
       const userId = req.user.id; // Get the user ID from the authenticated token
-      console.log(req);
       // Find the user by ID
       const user = await User.findById(userId);
       if (!user) {
@@ -208,19 +214,6 @@ exports.updateProfile = async (req, res) => {
     user.name = name || user.name;
     user.email = email || user.email;
     user.mobile = mobile || user.mobile;
-
-    // Check if email is provided and update it
-    // if (email) {
-    //   if (email !== user.email) {
-    //     user.email = email || user.email;
-    //     return res.json({
-    //       status: constants.STATUSCODE.UNAUTHENTICATED,
-    //       message: 'Unauthorized email update'
-    //     });
-    //   }
-      
-    // }
-
     // Save the updated user
     const updatedUser = await user.save();
 
@@ -230,13 +223,58 @@ exports.updateProfile = async (req, res) => {
       message: 'Profile updated'
     });
   } catch (error) {
-    console.log(error, "error");
     return res.json({
       status: false,
-      message: message.auth.serverError
+      message: message.serverError
     });
   }
 };
   
-  // Get logged-in user details
+// Change Password
+exports.changePassword = async(req, res)=>{
+  try {
+    const { current_password, new_password } = req.body;
+    const userId = req.user.id; // Get the user ID from the authenticated token
+     // Find the user by ID
+     const user = await User.findById(userId);
+     if (!user) {
+      return res.json({
+        status: false,
+        message: message.auth.userNotFound
+      });
+    }
+    const isPasswordMatch = await bcrypt.compare(current_password, user.password);
+    if (!isPasswordMatch) {
+      return res.json({
+        status: false,
+        message: 'Current password is incorrect'
+      });
+    }
+    const isSamePassword = await bcrypt.compare(new_password, user.password);
+
+    if (isSamePassword) {
+      return res.json({
+        status: false,
+        message: 'New password must be different from the old password'
+      });
+    }
+    // const hashedPassword = await bcrypt.hash(new_password, 10);
+    const salt = await bcrypt.genSalt(constants.LIMIT.ITEMTEN);
+    const setSecurePassword = await bcrypt.hash(new_password, salt);
+    user.password = setSecurePassword;
+    await user.save();
+
+    return res.json({
+      status: true,
+      message: 'Password changed successfully'
+    });    
+  } catch (error) {
+    console.log(error)
+    return res.json({
+      status: false,
+      message: message.serverError
+    });
+  }
+}
+// End
 

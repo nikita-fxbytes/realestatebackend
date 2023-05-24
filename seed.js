@@ -18,7 +18,7 @@ const seedData = async () => {
         status: 1, // Set the status to 1 for active
       },
       {
-        name: 'propertyrealtor',
+        name: 'realtor',
         status: 1, // Set the status to 1 for active
       }
     ];

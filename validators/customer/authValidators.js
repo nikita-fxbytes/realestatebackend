@@ -1,6 +1,6 @@
 const {body, check,validationResult} = require('express-validator');
 const User = require('../../models/User');
-const message = require('../../helper/admin/messages');
+const message = require('../../helper/customer/messages');
 const bcrypt = require('bcryptjs');
 //Create user
 exports.createUserValidator = [
@@ -41,9 +41,16 @@ exports.createUserValidator = [
     .isLength({ min: 6 }).withMessage(message.password.length)
     .matches(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]+$/)
     .withMessage(message.password.match),
-    // Role Id
-    // Status
-];
+    // Confirm password
+    body('confirm_password')
+    .notEmpty().withMessage(message.password.confirmRequired)
+    .custom((value, { req }) => {
+      if (value !== req.body.password) {
+        throw new Error(message.password.confirmMatch);
+      }
+      return true;
+    }),
+]
 //End
 
 //Login user
@@ -55,19 +62,20 @@ exports.logInValidator = [
     // Password
     body('password')
     .notEmpty().withMessage(message.password.required)
-    .custom(async (value, {req})=>{
-        const user = await User.findOne({
-            email: req.body.email
-        });
-        if(!user){
-            throw new Error(message.auth.invalidCredentials)
+    .custom(async (value, { req }) => {
+        const { email, password } = req.body;
+        let user = await User.findOne({ email });
+        if (!user) {
+          throw new Error(message.auth.invalidCredentials);
         }
-        const isMatch = bcrypt.compare(req.body.password, user.password);;
-        if(!isMatch){
-            throw new Error(message.auth.invalidCredentials);
+        const isMatch = await bcrypt.compare(password, user.password);
+        console.log(isMatch,"isMatch")
+        if (!isMatch) {
+          throw new Error(message.auth.invalidCredentials);
         }
-        return true
-    })
+  
+        return true;
+      }),
 ];
 //End
 
@@ -110,8 +118,30 @@ exports.updateProfileValidator = [
         }
         return true;
     })
-  ];
-  
+];
+
+// End
+// Change password validation
+exports.changePasswordValidator = [
+    // current password
+    body('current_password')
+    .notEmpty().withMessage(message.password.required),
+    // Password
+    body('new_password')
+    .notEmpty().withMessage(message.password.required)
+    .isLength({ min: 6 }).withMessage(message.password.length)
+    .matches(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]+$/)
+    .withMessage(message.password.match),
+    // Confirm password
+    body('confirm_password')
+    .notEmpty().withMessage(message.password.confirmRequired)
+    .custom((value, { req }) => {
+    if (value !== req.body.new_password) {
+        throw new Error(message.password.confirmMatch);
+    }
+    return true;
+    }),
+];
 // End
 //check validator
 exports.validate = (req, res, next) => {

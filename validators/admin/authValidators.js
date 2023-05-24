@@ -59,19 +59,20 @@ exports.logInValidator = [
     // Password
     body('password')
     .notEmpty().withMessage(message.password.required)
-    .custom(async (value, {req})=>{
-        const user = await User.findOne({
-            email: req.body.email
-        });
-        if(!user){
-            throw new Error(message.auth.invalidCredentials)
+    .custom(async (value, { req }) => {
+        const { email, password } = req.body;
+        let user = await User.findOne({ email });
+        if (!user) {
+          throw new Error(message.auth.invalidCredentials);
         }
-        const isMatch = bcrypt.compare(req.body.password, user.password);;
-        if(!isMatch){
-            throw new Error(message.auth.invalidCredentials);
+        const isMatch = await bcrypt.compare(password, user.password);
+        console.log(isMatch,"isMatch")
+        if (!isMatch) {
+          throw new Error(message.auth.invalidCredentials);
         }
-        return true
-    })
+  
+        return true;
+      }),
 ];
 //End
 // Delete and Edit user

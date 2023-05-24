@@ -10,7 +10,8 @@ const constants = require('../../helper/constants');
 //Create User
 exports.createUser = async(req, res)=>{
     try {
-        const {name, email, mobile, password, roleId, status} =req.body;
+        let {name, email, mobile, password, roleId, status} =req.body;
+        email = email.toLowerCase(); // Convert name to lowercase
         // Check if the role ID exists
         const existingRole = await Role.findById(roleId);
         if (!existingRole) {
@@ -230,7 +231,6 @@ exports.deleteUser = async(req, res) =>{
 exports.getLoggedInUser = async (req, res) => {
     try {
       const userId = req.user.id; // Get the user ID from the authenticated token
-      console.log(req);
       // Find the user by ID
       const user = await User.findById(userId);
       if (!user) {
@@ -294,7 +294,6 @@ exports.updateProfile = async (req, res) => {
       message: 'Profile updated'
     });
   } catch (error) {
-    console.log(error, "error");
     return res.json({
       status: false,
       message: message.auth.serverError

@@ -17,6 +17,7 @@ module.exports = {
       UNREAD: 'Unread'
     },
     ROLENAME:{
-        CUSTOMER:"customer"
+        CUSTOMER:"customer",
+        REALTOR: "realtor"
     }
 }

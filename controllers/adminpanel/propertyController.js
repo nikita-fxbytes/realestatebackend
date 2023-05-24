@@ -78,7 +78,6 @@ exports.getAllProperties = async (req, res) => {
         message: message.property.getProperty
       });
     } catch (error) {
-        console.log(error)
       res.json({
             status: false,
             message: message.auth.serverError
@@ -121,7 +120,6 @@ exports.createProperty = async(req, res)=>{
             message: message.property.createProperty
         })
     } catch (error) {
-        console.log(error)
         res.json({
             status: false,
             message: message.auth.serverError

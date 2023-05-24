@@ -1,6 +1,6 @@
 const {body, check,validationResult} = require('express-validator');
 const Inquiry = require('../../models/Inquiry');
-const message = require('../../helper/admin/messages');
+const message = require('../../helper/customer/messages');
 //Create user
 exports.createInquiryValidator = [
     // Name
@@ -24,19 +24,6 @@ exports.createInquiryValidator = [
     .notEmpty().withMessage(message.inquiry.property)
 ];
 //End
-
-// Delete and Edit user
-exports.deleteAndEditInquiryValidator = [
-    check('id').custom(async (value, { req }) => {
-      const user = await Inquiry.findById(value).exec();
-        if (!user) {
-            throw new Error(message.notFound);
-        }
-        // Attach user to request object for later use
-        req.user = user;
-        return true;
-    }),
-  ];
 // End
 //check validator
 exports.validate = (req, res, next) => {

@@ -194,149 +194,95 @@ exports.updateReadInquiry = async(req, res) => {
 // End
 
 
-// exports.getRealtorsWithMostInquiries = async (req, res) => {
-//     try {
-//         const inquiriesByRealtorCount = await Inquiry.aggregate([
-//             { $group: { _id: '$property', count: { $sum: 1 } } },
-//             { $sort: { count: -1 } },
-//             { $limit: 10 },
-//             { $lookup: { from: 'properties', localField: '_id', foreignField: '_id', as: 'propertyDetails' } },
-//             { $unwind: '$propertyDetails' },
-//             {
-//                 $lookup: {
-//                     from: 'users',
-//                     localField: 'propertyDetails.propertyRealtor',
-//                     foreignField: '_id',
-//                     as: 'realtorDetails'
-//                 }
-//             },
-//             { $unwind: '$realtorDetails' },
-//             {
-//                 $group: {
-//                     _id: '$realtorDetails._id',
-//                     realtor: { $first: '$realtorDetails' },
-//                     totalInquiries: { $sum: '$count' }
-//                 }
-//             },
-//             { $sort: { totalInquiries: -1 } },
-//             { $project: { '_id': 0 } }
-//         ]);
-
-//         if (inquiriesByRealtorCount.length === 0) {
-//             // return res.json({ message: 'No realtors found.' });
-//             return  res.json({
-//                 status: contant.STATUSCODE.NOT_FOUND,
-//                 realtors: realtors,
-//                 message: messages.inquiry.notRealtorFound
-//             });
-//         }
-
-//         const realtors = inquiriesByRealtorCount.map(item => item.realtor);
-//         res.json({
-//             status: true,
-//             realtors: realtors,
-//             message: messages.inquiry.getRealtors
-//         });
-//     } catch (error) {
-//         res.json({
-//             status: false,
-//             message: messages.auth.serverError
-//         }); 
-//     }
-// };
 
 exports.getRealtorsWithMostInquiries = async (req, res) => {
     try {
-        const { searchTerm, sortColumn, sortDirection, page, perPage } = req.body;
-
-        const pipeline = [
-            { $group: { _id: '$property', count: { $sum: 1 } } },
-            { $sort: { count: -1 } },
-            { $limit: 10 },
-            { $lookup: { from: 'properties', localField: '_id', foreignField: '_id', as: 'propertyDetails' } },
-            { $unwind: '$propertyDetails' },
-            {
-                $lookup: {
-                    from: 'users',
-                    localField: 'propertyDetails.propertyRealtor',
-                    foreignField: '_id',
-                    as: 'realtorDetails'
-                }
+      const { searchTerm, sortColumn, sortDirection, page, perPage } = req.body;
+  
+      const pipeline = [
+        { $group: { _id: '$property', count: { $sum: 1 } } },
+        { $sort: { count: -1 } },
+        { $lookup: { from: 'properties', localField: '_id', foreignField: '_id', as: 'propertyDetails' } },
+        { $unwind: '$propertyDetails' },
+        {
+          $lookup: {
+            from: 'users',
+            localField: 'propertyDetails.propertyRealtor',
+            foreignField: '_id',
+            as: 'realtorDetails'
+          }
+        },
+        { $unwind: '$realtorDetails' },
+        {
+          $group: {
+            _id: '$realtorDetails._id',
+            realtor: {
+              $first: {
+                name: '$realtorDetails.name',
+                email: '$realtorDetails.email',
+                mobile: '$realtorDetails.mobile',
+                id: '$realtorDetails._id'
+              }
             },
-            { $unwind: '$realtorDetails' },
-        ];
-
-        if (searchTerm) {
-            const searchTermRegex = /^[0-9]+$/; // Regular expression to match numbers only
-            if (searchTermRegex.test(searchTerm)) {
-                pipeline.push({
-                    $match: {
-                        'realtorDetails.mobile': parseInt(searchTerm)
-                    }
-                });
-            } else {
-                pipeline.push({
-                    $match: {
-                        $or: [
-                            { 'realtorDetails.name': { $regex: searchTerm, $options: 'i' } },
-                            { 'realtorDetails.email': { $regex: searchTerm, $options: 'i' } }
-                        ]
-                    }
-                });
+            totalInquiries: { $sum: '$count' }
+          }
+        },
+        { $sort: { totalInquiries: -1 } } // Sort by totalInquiries in descending order
+      ];
+  
+      if (searchTerm) {
+        const searchTermRegex = /^[0-9]+$/; // Regular expression to match numbers only
+        if (searchTermRegex.test(searchTerm)) {
+          pipeline.push({
+            $match: {
+              'realtor.mobile': parseInt(searchTerm)
             }
+          });
+        } else {
+          pipeline.push({
+            $match: {
+              $or: [
+                { 'realtor.name': { $regex: searchTerm, $options: 'i' } },
+                { 'realtor.email': { $regex: searchTerm, $options: 'i' } }
+              ]
+            }
+          });
         }
-
-        pipeline.push(
-            {
-                $group: {
-                    _id: '$realtorDetails._id',
-                    realtor: {
-                        $first: {
-                            name: '$realtorDetails.name',
-                            email: '$realtorDetails.email',
-                            mobile: '$realtorDetails.mobile',
-                            id: '$realtorDetails._id'
-                        }
-                    },
-                    totalInquiries: { $sum: '$count' }
-                }
-            },
-            { $sort: { totalInquiries: sortDirection === 'desc' ? -1 : 1 } },
-            { $skip: (page - 1) * perPage },
-            { $limit: perPage },
-            { $project: { _id: 0 } }
-        );
-
-        const inquiriesByRealtorCount = await Inquiry.aggregate(pipeline);
-        const totalInquiries = inquiriesByRealtorCount.length;
-        const totalPages = Math.ceil(totalInquiries / perPage);
-
-        if (inquiriesByRealtorCount.length === 0) {
-            return res.json({
-                status: contant.STATUSCODE.NOT_FOUND,
-                realtors: [],
-                totalPages: 0,
-                currentPage: page,
-                message: messages.inquiry.notRealtorFound
-            });
+      }
+  
+      pipeline.push(
+        { $sort: { [sortColumn]: sortDirection === 'desc' ? -1 : 1 } },
+        {
+          $facet: {
+            paginatedResults: [
+              { $skip: (page - 1) * perPage },
+              { $limit: perPage }
+            ],
+            totalCount: [
+              { $count: 'count' }
+            ]
+          }
         }
-
-        const realtors = inquiriesByRealtorCount.map(item => item.realtor);
-
-        res.json({
-            status: true,
-            realtors: realtors,
-            totalPages: totalPages,
-            currentPage: page,
-            message: messages.inquiry.getRealtors
-        });
+      );
+  
+      const [result] = await Inquiry.aggregate(pipeline);
+      const realtors = result.paginatedResults.map(item => item.realtor);
+      const totalCount = result.totalCount.length > 0 ? result.totalCount[0].count : 0;
+  
+      res.json({
+        status: true,
+        realtors: realtors,
+        totalPages: Math.ceil(totalCount / perPage),
+        currentPage: page,
+        message: messages.inquiry.getRealtors
+      });
     } catch (error) {
-        res.json({
-            status: false,
-            message: messages.auth.serverError
-        });
+      res.json({
+        status: false,
+        message: messages.auth.serverError
+    });
     }
-};
+  };
 
 
 
